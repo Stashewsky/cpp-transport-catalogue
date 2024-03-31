@@ -1,3 +1,9 @@
+.DS_Store
+.idea/
+transport-catalogue/.DS_Store
+transport-catalogue/CMakeLists.txt
+transport-catalogue/cmake-build-debug/
+
 # Prerequisites
 *.d
 
