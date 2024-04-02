@@ -5,6 +5,7 @@
 #include "transport_catalogue.h"
 namespace Catalogue {
     namespace Output {
+        void ReadAndPrintStatRequest(size_t request_count, std::istream& input, std::ostream& output, const Data::TransportCatalogue &transport_catalogue);
         void ParseAndPrintStat(const Data::TransportCatalogue &tansport_catalogue, std::string_view request,
                                std::ostream &output);
         namespace Detail{

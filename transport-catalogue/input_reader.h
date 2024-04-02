@@ -4,6 +4,7 @@
 #include <vector>
 #include "geo.h"
 #include "transport_catalogue.h"
+#include <istream>
 
 namespace Catalogue {
     namespace Input {
@@ -24,6 +25,7 @@ namespace Catalogue {
 
         class InputReader {
         public:
+            void ReadCommands(size_t base_request_count, std::istream& input);
             void ParseLine(std::string_view line);
             void ApplyCommands(Catalogue::Data::TransportCatalogue &catalogue) const;
 

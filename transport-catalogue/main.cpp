@@ -14,19 +14,11 @@ int main() {
 
     {
         Input::InputReader reader;
-        for (int i = 0; i < base_request_count; ++i) {
-            std::string line;
-            getline(std::cin, line);
-            reader.ParseLine(line);
-        }
+        reader.ReadCommands(base_request_count, std::cin);
         reader.ApplyCommands(catalogue);
     }
 
     int stat_request_count;
     std::cin >> stat_request_count >> std::ws;
-    for (int i = 0; i < stat_request_count; ++i) {
-        std::string line;
-        getline(std::cin, line);
-        Output::ParseAndPrintStat(catalogue, line, std::cout);
-    }
+    Output::ReadAndPrintStatRequest(stat_request_count, std::cin, std::cout, catalogue);
 }

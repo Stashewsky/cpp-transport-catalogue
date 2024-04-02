@@ -85,6 +85,13 @@ namespace Catalogue {
             }
         }
 
+        void InputReader::ReadCommands(size_t base_request_count, std::istream& input) {
+            for (int i = 0; i < base_request_count; ++i) {
+                std::string line;
+                getline(input, line);
+                ParseLine(line);
+            }
+        }
         void InputReader::ParseLine(std::string_view line) {
             auto command_description = Detail::ParseCommandDescription(line);
             if (command_description) {
@@ -92,8 +99,7 @@ namespace Catalogue {
             }
         }
 
-        void
-        InputReader::ApplyCommands([[maybe_unused]] Data::TransportCatalogue &catalogue) const {
+        void InputReader::ApplyCommands([[maybe_unused]] Data::TransportCatalogue &catalogue) const {
             // Реализуйте метод самостоятельно
             using namespace std::literals;
             for (auto &command: commands_) {

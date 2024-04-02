@@ -4,6 +4,13 @@
 #include <algorithm>
 namespace Catalogue {
     namespace Output {
+        void ReadAndPrintStatRequest(size_t request_count, std::istream& input, std::ostream& output, const Data::TransportCatalogue &transport_catalogue){
+            for(size_t i = 0; i < request_count; i++) {
+                std::string line;
+                getline(input, line);
+                ParseAndPrintStat(transport_catalogue, line, output);
+            }
+        }
         void ParseAndPrintStat(const Data::TransportCatalogue &transport_catalogue, std::string_view request,
                                std::ostream &output) {
             // Реализуйте самостоятельно
