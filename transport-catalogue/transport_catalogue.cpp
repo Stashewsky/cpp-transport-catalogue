@@ -15,6 +15,15 @@ namespace Catalogue {
             buses_on_stop_[&stops_data_.back()];
         }
 
+        void TransportCatalogue::Add_distance_between_stops(std::string_view from, std::string_view to, int distance){
+            auto stop_from = Find_stop(from);
+            auto stop_to = Find_stop(to);
+            if(stop_from && stop_to){
+                distance_between_stops[{stop_from, stop_to}] = distance;
+            }
+        }
+
+
         Stop *TransportCatalogue::Find_stop(std::string_view stop_name) const {
             if (!stops_.count(stop_name)) {
                 return {};
@@ -32,5 +41,26 @@ namespace Catalogue {
         std::set<std::string_view> TransportCatalogue::Find_buses_for_stop(std::string_view stop) const {
             return buses_on_stop_.at(Find_stop(stop));
         }
+
+        int TransportCatalogue::DisplayDistance(std::pair<Stop*, Stop*> stop_pair) const {
+            if(stop_pair.first && stop_pair.second){
+                if(distance_between_stops.count(stop_pair)) {
+                    return distance_between_stops.at(stop_pair);
+                }else{
+                    return distance_between_stops.at({stop_pair.second, stop_pair.first});
+                }
+            }else{
+                return 0;
+            }
+        }
+
+        int TransportCatalogue::ComputeRouteLength(const std::vector<Data::Stop *> &route) const {
+            int result = 0;
+            for (int from = 0, to = 1; from < route.size() - 1; from++, to++) {
+                result += DisplayDistance({route[from], route[to]});
+            }
+            return result;
+        }
+
     }
 }

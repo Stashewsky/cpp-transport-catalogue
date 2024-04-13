@@ -35,7 +35,11 @@ namespace Catalogue {
                 output << std::setprecision(2) << std::fixed <<
                        bus->stops_on_route.size() << " stops on route, "s <<
                        Detail::CountUniqueStops(bus->stops_on_route) << " unique stops, "s <<
-                       Detail::ComputeRouteLength(bus->stops_on_route) << " route length"s << std::endl;
+                       transport_catalogue.ComputeRouteLength(bus->stops_on_route) << " route length, "s <<
+                       //Bus 750: 7 stops on route, 3 unique stops, 27400 route length, 1.30853 curvature
+                       std::setprecision(5) <<
+                       transport_catalogue.ComputeRouteLength(bus->stops_on_route) / Detail::ComputeGeoLength(bus->stops_on_route) <<
+                       " curvature"s << std::endl;
 
             }
 
@@ -80,13 +84,14 @@ namespace Catalogue {
                 return vec.size();
             }
 
-            double ComputeRouteLength(const std::vector<Data::Stop *> &route) {
+            double ComputeGeoLength(const std::vector<Data::Stop *> &route) {
                 double res = 0;
                 for (int i = 0; i < route.size() - 1; i++) {
                     res += ComputeDistance(route[i]->pos, route[i + 1]->pos);
                 }
                 return res;
             }
+
         }
     }
 }

@@ -83,6 +83,38 @@ namespace Catalogue {
                         std::string(line.substr(not_space, colon_pos - not_space)),
                         std::string(line.substr(colon_pos + 1))};
             }
+
+            std::vector <std::pair <std::string_view, int>> ParseRouteDistance(std::string_view line){
+                std::vector<std::pair<std::string_view, int>> result;
+                auto first_comma = line.find(',');
+                auto second_comma = line.find(',', first_comma + 1);
+
+                if((first_comma == std::string_view::npos) || (second_comma == std::string_view::npos)){
+                    return result;
+                }
+
+                auto start = line.find_first_not_of(' ', second_comma + 1);
+
+                while (start < line.size()) {
+                    // Ищем "m to"
+                    size_t pos_m_to = line.find("m to", start);
+                    size_t next_comma = line.find(',', pos_m_to);
+                    if (pos_m_to != std::string_view ::npos) {
+                        // Извлекаем расстояние и местоположение
+                        std::string_view distance = line.substr(start, pos_m_to - start);
+                        auto name_start_pos = pos_m_to + 5;
+                        std::string_view stop_name = line.substr(name_start_pos, next_comma - name_start_pos);
+                        int dist = std::stoi(std::string (distance));
+                        result.push_back(std::make_pair(stop_name, dist));
+                    }
+                    if(next_comma == std::string_view::npos){
+                        break;
+                    }
+                    start = next_comma + 1;
+                }
+
+                return result;
+            }
         }
 
         void InputReader::ReadCommands(size_t base_request_count, std::istream& input) {
@@ -108,6 +140,15 @@ namespace Catalogue {
                     new_stop.stop_name = command.id;
                     new_stop.pos = Detail::ParseCoordinates(command.description);
                     catalogue.Add_stop(std::move(new_stop));
+                }
+            }
+
+            for (auto &command: commands_) {
+                if (command.command == "Stop"s) {
+                    auto stop_from = command.id;
+                    for(auto& stop_distance : Detail::ParseRouteDistance(command.description)){
+                        catalogue.Add_distance_between_stops(stop_from, stop_distance.first, stop_distance.second);
+                    }
                 }
             }
 

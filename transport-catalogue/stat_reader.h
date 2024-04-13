@@ -14,7 +14,8 @@ namespace Catalogue {
 
         size_t CountUniqueStops(const std::vector<Data::Stop *> &vector);
 
-        double ComputeRouteLength(const std::vector<Data::Stop *> &route);
+        double ComputeGeoLength(const std::vector<Data::Stop *> &route);
+
         }
     }
 }
