@@ -4,25 +4,19 @@ RequestHandler::RequestHandler(const catalogue::data::TransportCatalogue &catalo
 catalogue_(catalogue)
 {}
 
-const std::optional<Bus *> RequestHandler::GetBusInfo(const std::string_view &bus_name) const {
-    if(!catalogue_.Check_bus(bus_name)){
-        return std::nullopt;
-    }
-    return catalogue_.Find_bus(bus_name);
+const Bus * RequestHandler::GetBusInfo(const std::string_view &bus_name) const {
+    return catalogue_.FindBus(bus_name);
 }
 
-const std::optional<Stop*> RequestHandler::GetStopInfo(const std::string_view &stop_name) const {
-    if(!catalogue_.Check_stop(stop_name)){
-        return std::nullopt;
-    }
-    return catalogue_.Find_stop(stop_name);
+const Stop * RequestHandler::GetStopInfo(const std::string_view &stop_name) const {
+    return catalogue_.FindStop(stop_name);
 }
 
 void RequestHandler::CalcDistance(double& geo_length, int& route_length, std::string_view stop_from, std::string_view stop_to){
-    auto from = catalogue_.Find_stop(stop_from);
-    auto to = catalogue_.Find_stop(stop_to);
+    auto from = catalogue_.FindStop(stop_from);
+    auto to = catalogue_.FindStop(stop_to);
     geo_length += catalogue::geoposition::ComputeDistance(from->pos, to->pos);
-    route_length += catalogue_.GetDistance({from, to});
+    route_length += catalogue_.GetDistance(from, to);
 }
 
 size_t RequestHandler::CountUniqueStops(const domain::Bus *bus) const {
@@ -38,7 +32,7 @@ std::vector<std::pair<Bus*, std::vector<Stop*>>> RequestHandler::GetDataForRende
     for(const auto& [bus_name, bus] : buses){
         std::vector<Stop*> stops;
         for(const auto& stop : bus->stops_on_route){
-            stops.emplace_back(catalogue_.Find_stop(stop));
+            stops.emplace_back(catalogue_.FindStop(stop));
         }
         result.emplace_back(std::make_pair(bus, std::move(stops)));
     }

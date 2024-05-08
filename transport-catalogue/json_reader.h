@@ -8,13 +8,13 @@ namespace catalogue {
         namespace json {
             class JSON_Reader{
             public:
-                void Parse_JSON_document(Document& doc);
-                void Execute_base_requests(TransportCatalogue& catalogue);
-                map_renderer::RenderSettings Get_render_settings();
-                Document Execute_stat_requests(RequestHandler& handler);
+                void ParseJSONdocument(Document& doc);
+                void ExecuteBaseRequests(TransportCatalogue &catalogue);
+                map_renderer::RenderSettings GetRenderSettings();
+                Document ExecuteStatRequests(RequestHandler& handler);
             private:
-                void Execute_STOP_request(const Node& stop_node, TransportCatalogue& catalogue);
-                void Execute_BUS_request(const Node& bus_node, TransportCatalogue& catalogue);
+                void ExecuteStopRequest(const Node& stop_node, TransportCatalogue &catalogue);
+                void ExecuteBusRequest(const Node& bus_node, TransportCatalogue &catalogue);
                 Dict MakeStopResponse(const Node& stop_node, RequestHandler& handler);
                 Dict MakeBusResponse(const Node& bus_node, RequestHandler& handler);
                 Dict MakeMapResponse(const Node& map_node, RequestHandler& handler);

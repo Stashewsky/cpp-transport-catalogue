@@ -97,7 +97,7 @@ namespace map_renderer{
     private:
         struct CompareStopPointers {
             bool operator()(const domain::Stop* lhs, const domain::Stop* rhs) const {
-                return lhs->stop_name < rhs->stop_name; // Пример сортировки по полю id
+                return lhs->stop_name < rhs->stop_name;
             }
         };
 

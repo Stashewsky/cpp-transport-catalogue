@@ -15,9 +15,9 @@ int main() {
 
     Document doc_in;
     doc_in = Load(std::cin);
-    reader.Parse_JSON_document(doc_in);
-    reader.Execute_base_requests(catalogue);
-    Document doc_out = reader.Execute_stat_requests(handler);
+    reader.ParseJSONdocument(doc_in);
+    reader.ExecuteBaseRequests(catalogue);
+    Document doc_out = reader.ExecuteStatRequests(handler);
     Print(doc_out, std::cout);
     return 0;
 }

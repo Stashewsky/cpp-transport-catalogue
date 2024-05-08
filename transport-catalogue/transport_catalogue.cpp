@@ -1,20 +1,20 @@
 #include "transport_catalogue.h"
 namespace catalogue {
     namespace data {
-        void TransportCatalogue::Add_bus(Bus &&new_bus) {
+        void TransportCatalogue::AddBus(Bus &&new_bus) {
             bus_data_.push_back(std::move(new_bus));
             const auto& bus = bus_data_.back();
             buses_[std::string_view(bus.bus_name)] = &bus_data_.back();
             for(auto it = bus.stops_on_route.begin(); it != bus.stops_on_route.end(); ++it){
-                if(!Check_stop(*it)){
+                if(!FindStop(*it)){
                     Stop tmp = {*it, {0.0, 0.0}, {}};
-                    Add_stop(std::move(tmp));
+                    AddStop(std::move(tmp));
                 }
                 stops_.at(*it)->buses_on_stop.insert(bus.bus_name);
             }
         }
 
-        void TransportCatalogue::Add_stop(Stop &&new_stop) {
+        void TransportCatalogue::AddStop(Stop &&new_stop) {
             bool stop_already_exist = false;
             for(auto& stop : stops_data_){
                 if(stop.stop_name == new_stop.stop_name){
@@ -32,47 +32,39 @@ namespace catalogue {
             }
         }
 
-        void TransportCatalogue::Add_distance_between_stops(Distance&& distance){
-            if(!Check_stop(distance.to)){
+        void TransportCatalogue::AddDistanceBetweenStops(std::string_view from, std::string_view to, int distance){
+            if(!FindStop(to)){
                 Stop new_stop;
-                new_stop.stop_name = distance.to;
+                new_stop.stop_name = to;
                 new_stop.pos = {};
                 new_stop.buses_on_stop = {};
-                Add_stop(std::move(new_stop));
+                AddStop(std::move(new_stop));
             }
-            auto from = Find_stop(distance.from);
-            auto to = Find_stop(distance.to);
-            distance_between_stops[{from, to}] = distance.distance;
+            auto from_stop = FindStop(from);
+            auto to_stop = FindStop(to);
+            distance_between_stops[{from_stop, to_stop}] = distance;
         }
 
-        Stop *TransportCatalogue::Find_stop(std::string_view stop_name) const {
+        Stop *TransportCatalogue::FindStop(std::string_view stop_name) const {
             if (!stops_.count(stop_name)) {
                 return {};
             }
             return stops_.at(stop_name);
         }
 
-        Bus* TransportCatalogue::Find_bus(std::string_view bus_name) const {
+        Bus* TransportCatalogue::FindBus(std::string_view bus_name) const {
             if (!buses_.count(bus_name)) {
                 return {};
             }
             return buses_.at(bus_name);
         }
 
-        bool TransportCatalogue::Check_bus(std::string_view bus_name) const {
-            return buses_.count(bus_name);
-        }
-
-        bool TransportCatalogue::Check_stop(std::string_view stop_name) const {
-            return stops_.count(stop_name);
-        }
-
-        int TransportCatalogue::GetDistance(std::pair<Stop *, Stop *> stop_pair) const {
-            if (stop_pair.first && stop_pair.second) {
-                if (distance_between_stops.count(stop_pair)) {
-                    return distance_between_stops.at(stop_pair);
+        int TransportCatalogue::GetDistance(Stop* from, Stop* to) const {
+            if (from && to) {
+                if (distance_between_stops.count({from, to})) {
+                    return distance_between_stops.at({from, to});
                 } else {
-                    return distance_between_stops.at({stop_pair.second, stop_pair.first});
+                    return distance_between_stops.at({to, from});
                 }
             } else {
                 return 0;

@@ -11,14 +11,12 @@ namespace catalogue{
 
         class TransportCatalogue {
         public:
-            void Add_bus(Bus &&new_bus);
-            void Add_stop(Stop &&new_stop);
-            void Add_distance_between_stops(Distance&& distance);
-            Stop *Find_stop(std::string_view stop_name) const;
-            Bus *Find_bus(std::string_view bus_name) const;
-            bool Check_bus(std::string_view bus_name) const;
-            bool Check_stop(std::string_view stop_name)const;
-            int GetDistance(std::pair<Stop*, Stop*> stop_pair) const;
+            void AddBus(Bus &&new_bus);
+            void AddStop(Stop &&new_stop);
+            void AddDistanceBetweenStops(std::string_view from, std::string_view to, int distance);
+            Stop *FindStop(std::string_view stop_name) const;
+            Bus *FindBus(std::string_view bus_name) const;
+            int GetDistance(Stop* from, Stop* to) const;
             const std::unordered_map<std::string_view, Bus*>& Get_all_buses() const;
         private:
             std::deque<Bus> bus_data_;
