@@ -168,7 +168,7 @@ namespace catalogue {
 
                 map_renderer::RenderSettings settings = GetRenderSettings();
                 map_renderer::MapRenderer renderer(settings);
-                svg::Document map = renderer.Render_map(handler.GetDataForRender());
+                svg::Document map = renderer.RenderMap(handler.GetDataForRender());
 
                 std::ostringstream str_map;
                 map.Render(str_map);

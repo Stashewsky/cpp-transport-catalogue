@@ -25,18 +25,18 @@ size_t RequestHandler::CountUniqueStops(const domain::Bus *bus) const {
     return res.size();
 }
 
-std::vector<std::pair<Bus*, std::vector<Stop*>>> RequestHandler::GetDataForRender() {
-    std::vector<std::pair<Bus*, std::vector<Stop*>>> result;
+std::vector<std::pair<const Bus*, std::vector<const Stop*>>> RequestHandler::GetDataForRender() {
+    std::vector<std::pair<const Bus*, std::vector<const Stop*>>> result;
 
     const auto& buses = catalogue_.Get_all_buses();
     for(const auto& [bus_name, bus] : buses){
-        std::vector<Stop*> stops;
+        std::vector<const Stop*> stops;
         for(const auto& stop : bus->stops_on_route){
             stops.emplace_back(catalogue_.FindStop(stop));
         }
         result.emplace_back(std::make_pair(bus, std::move(stops)));
     }
-    auto ComparePairsByBusName = [](const std::pair<Bus*, std::vector<Stop*>>& lhs, const std::pair<Bus*, std::vector<Stop*>>& rhs) {
+    auto ComparePairsByBusName = [](const std::pair<const Bus*, std::vector<const Stop*>>& lhs, const std::pair<const Bus*, std::vector<const Stop*>>& rhs) {
         return lhs.first->bus_name < rhs.first->bus_name;
     };
     std::sort(result.begin(), result.end(), ComparePairsByBusName);

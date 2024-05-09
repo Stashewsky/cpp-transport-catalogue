@@ -93,7 +93,7 @@ namespace map_renderer{
     class MapRenderer {
     public:
         MapRenderer(RenderSettings& settings) : render_settings_(settings){}
-        svg::Document Render_map(const std::vector<std::pair<domain::Bus*, std::vector<domain::Stop*>>>& data);
+        svg::Document RenderMap(const std::vector<std::pair<const domain::Bus*, std::vector<const domain::Stop*>>>& data);
     private:
         struct CompareStopPointers {
             bool operator()(const domain::Stop* lhs, const domain::Stop* rhs) const {
@@ -102,12 +102,11 @@ namespace map_renderer{
         };
 
         RenderSettings render_settings_;
-        void Set_line_properties(svg::Polyline& line, int line_num);
-        SphereProjector Get_projector(std::vector<catalogue::geoposition::Coordinates> stop_coordinates);
-        svg::Color Get_color_for_this_line(int line_num);
-        void Add_lines(SphereProjector& projector, const std::vector<std::pair<domain::Bus*, std::vector<domain::Stop*>>>& data, svg::Document& doc);
-        void Add_route_labels(SphereProjector& projector, const std::vector<std::pair<domain::Bus*, std::vector<domain::Stop*>>>& data, svg::Document& doc);
-        void Add_stop_circles(SphereProjector& projector, const std::set<domain::Stop*, CompareStopPointers>& data, svg::Document& doc);
-        void Add_stop_labels(SphereProjector& projector, const std::set<domain::Stop*, CompareStopPointers>& data, svg::Document& doc);
+        SphereProjector GetProjector(std::vector<catalogue::geoposition::Coordinates> stop_coordinates);
+        svg::Color GetColorForThisLine(int line_num);
+        void AddLines(SphereProjector& projector, const std::vector<std::pair<const domain::Bus*, std::vector<const domain::Stop*>>>& data, svg::Document& doc);
+        void AddRouteLabels(SphereProjector& projector, const std::vector< std::pair<const domain::Bus*, std::vector<const domain::Stop*>>>& data, svg::Document& doc);
+        void AddStopCircles(SphereProjector& projector, const std::set<const domain::Stop*, CompareStopPointers>& data, svg::Document& doc);
+        void AddStopLabels(SphereProjector& projector, const std::set<const domain::Stop*, CompareStopPointers>& data, svg::Document& doc);
     };
 }

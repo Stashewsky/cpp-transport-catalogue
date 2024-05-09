@@ -45,21 +45,21 @@ namespace catalogue {
             distance_between_stops[{from_stop, to_stop}] = distance;
         }
 
-        Stop *TransportCatalogue::FindStop(std::string_view stop_name) const {
+        const Stop *TransportCatalogue::FindStop(std::string_view stop_name) const {
             if (!stops_.count(stop_name)) {
                 return {};
             }
             return stops_.at(stop_name);
         }
 
-        Bus* TransportCatalogue::FindBus(std::string_view bus_name) const {
+        const Bus* TransportCatalogue::FindBus(std::string_view bus_name) const {
             if (!buses_.count(bus_name)) {
                 return {};
             }
             return buses_.at(bus_name);
         }
 
-        int TransportCatalogue::GetDistance(Stop* from, Stop* to) const {
+        int TransportCatalogue::GetDistance(const Stop* from, const Stop* to) const {
             if (from && to) {
                 if (distance_between_stops.count({from, to})) {
                     return distance_between_stops.at({from, to});

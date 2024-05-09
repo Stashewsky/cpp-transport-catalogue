@@ -12,7 +12,7 @@ namespace map_renderer {
         };
     }
 
-    SphereProjector MapRenderer::Get_projector(std::vector<catalogue::geoposition::Coordinates> stop_coordinates){
+    SphereProjector MapRenderer::GetProjector(std::vector<catalogue::geoposition::Coordinates> stop_coordinates){
         return SphereProjector{stop_coordinates.begin(),
                                stop_coordinates.end(),
                                render_settings_.width_,
@@ -20,24 +20,16 @@ namespace map_renderer {
                                render_settings_.padding_};
     }
 
-    void MapRenderer::Set_line_properties(svg::Polyline& line, int line_num){
-        line.SetFillColor("none");
-        line.SetStrokeColor(Get_color_for_this_line(line_num));
-        line.SetStrokeWidth(render_settings_.line_width_);
-        line.SetStrokeLineCap(svg::StrokeLineCap::ROUND);
-        line.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
-    }
-
-    svg::Color MapRenderer::Get_color_for_this_line(int line_num){
+    svg::Color MapRenderer::GetColorForThisLine(int line_num){
         auto palette_size = render_settings_.color_palette_.size();
         auto index = line_num % palette_size;
         return render_settings_.color_palette_[index];
     }
 
-    svg::Document MapRenderer::Render_map(const std::vector<std::pair<domain::Bus*, std::vector<domain::Stop*>>>& data) {
+    svg::Document MapRenderer::RenderMap(const std::vector<std::pair<const domain::Bus*, std::vector<const domain::Stop*>>>& data) {
         svg::Document map;
         std::vector<catalogue::geoposition::Coordinates> coordinates;
-        std::set<domain::Stop*, CompareStopPointers> sorted_stops;
+        std::set<const domain::Stop*, CompareStopPointers> sorted_stops;
 
         for(const auto& [bus, stops] : data){
             for(const auto& stop : stops){
@@ -45,17 +37,17 @@ namespace map_renderer {
                 sorted_stops.insert(stop);
             }
         }
-        SphereProjector projector = Get_projector(coordinates);
-        Add_lines(projector, data, map);
-        Add_route_labels(projector, data, map);
-        Add_stop_circles(projector, sorted_stops, map);
-        Add_stop_labels(projector, sorted_stops, map);
+        SphereProjector projector = GetProjector(coordinates);
+        AddLines(projector, data, map);
+        AddRouteLabels(projector, data, map);
+        AddStopCircles(projector, sorted_stops, map);
+        AddStopLabels(projector, sorted_stops, map);
         return map;
     }
 
-    void MapRenderer::Add_lines(map_renderer::SphereProjector &projector,
-                                const std::vector<std::pair<domain::Bus*, std::vector<domain::Stop*>>> &data,
-                                svg::Document& doc) {
+    void MapRenderer::AddLines(SphereProjector &projector,
+                               const std::vector<std::pair<const domain::Bus*, std::vector<const domain::Stop*>>> &data,
+                               svg::Document& doc) {
         int color_count = 0;
         for(const auto& [bus, stops] : data){
             if(!stops.empty()){
@@ -65,7 +57,7 @@ namespace map_renderer {
                 }
                 //нужно ли определение настроек линии вынести в отдельную функцию?
                 line.SetFillColor("none");
-                line.SetStrokeColor(Get_color_for_this_line(color_count));
+                line.SetStrokeColor(GetColorForThisLine(color_count));
                 line.SetStrokeWidth(render_settings_.line_width_);
                 line.SetStrokeLineCap(svg::StrokeLineCap::ROUND);
                 line.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
@@ -75,9 +67,9 @@ namespace map_renderer {
         }
     }
 
-    void MapRenderer::Add_route_labels(map_renderer::SphereProjector &projector,
-                                       const std::vector<std::pair<domain::Bus*, std::vector<domain::Stop*>>> &data,
-                                       svg::Document &doc) {
+    void MapRenderer::AddRouteLabels(SphereProjector &projector,
+                                     const std::vector<std::pair<const domain::Bus*, std::vector<const domain::Stop*>>> &data,
+                                     svg::Document &doc) {
         int color_count = 0;
         for(const auto& [bus, stops] : data){
             if(!stops.empty()){
@@ -96,7 +88,7 @@ namespace map_renderer {
                 underlayer.SetStrokeLineJoin(svg::StrokeLineJoin::ROUND);
                 underlayer.SetStrokeLineCap(svg::StrokeLineCap::ROUND);
 
-                route_label.SetFillColor(Get_color_for_this_line(color_count));
+                route_label.SetFillColor(GetColorForThisLine(color_count));
 
                 const auto& start_stop = stops[0];
                 const auto& final_stop = stops[stops.size()/2];
@@ -125,9 +117,9 @@ namespace map_renderer {
 
     }
 
-    void MapRenderer::Add_stop_circles(map_renderer::SphereProjector &projector,
-                                       const std::set<domain::Stop*, CompareStopPointers>& data,
-                                       svg::Document &doc) {
+    void MapRenderer::AddStopCircles(SphereProjector &projector,
+                                     const std::set<const domain::Stop*, CompareStopPointers>& data,
+                                     svg::Document &doc) {
 
         for(const auto& stop : data){
             if(!stop->buses_on_stop.empty()){
@@ -140,9 +132,9 @@ namespace map_renderer {
         }
     }
 
-    void MapRenderer::Add_stop_labels(map_renderer::SphereProjector &projector,
-                                      const std::set<domain::Stop*, CompareStopPointers>& data,
-                                      svg::Document &doc) {
+    void MapRenderer::AddStopLabels(SphereProjector &projector,
+                                    const std::set<const domain::Stop*, CompareStopPointers>& data,
+                                    svg::Document &doc) {
         svg::Text underlayer;
         underlayer.SetOffset(render_settings_.stop_label_offset_);
         underlayer.SetFontSize(render_settings_.stop_label_font_size_);
