@@ -1,7 +1,6 @@
 #pragma once
 #include "json.h"
 #include <memory>
-#include <stack>
 #include <string>
 
 class KeyContext;

@@ -15,9 +15,9 @@ namespace catalogue {
             private:
                 void ExecuteStopRequest(const Node& stop_node, TransportCatalogue &catalogue);
                 void ExecuteBusRequest(const Node& bus_node, TransportCatalogue &catalogue);
-                Dict MakeStopResponse(const Node& stop_node, RequestHandler& handler);
-                Dict MakeBusResponse(const Node& bus_node, RequestHandler& handler);
-                Dict MakeMapResponse(const Node& map_node, RequestHandler& handler);
+                Node MakeStopResponse(const Node& stop_node, RequestHandler& handler);
+                Node MakeBusResponse(const Node& bus_node, RequestHandler& handler);
+                Node MakeMapResponse(const Node& map_node, RequestHandler& handler);
                 svg::Color ParseColor(const Node& color_node);
                 Node base_requests_;
                 Node stat_requests_;

@@ -1,5 +1,6 @@
 #include "json_reader.h"
 #include <sstream>
+#include "json_builder.h"
 namespace catalogue {
     namespace detail {
         namespace json {
@@ -120,32 +121,38 @@ namespace catalogue {
                 return svg::NoneColor;
             }
 
-            Dict JSON_Reader::MakeStopResponse(const Node &stop_node,
+            Node JSON_Reader::MakeStopResponse(const Node &stop_node,
                                                RequestHandler &handler) {
-                Dict stop_response;
+                Builder builder;
                 const auto &stop = handler.GetStopInfo(stop_node.AsMap().at("name").AsString());
                 if (!stop) {
-                    stop_response["request_id"] = stop_node.AsMap().at("id").AsInt();
-                    stop_response["error_message"] = std::string("not found");
-                    return stop_response;
+                    builder.StartDict()
+                        .Key("request_id").Value(stop_node.AsMap().at("id"))
+                        .Key("error_message").Value(std::string("not found"))
+                        .EndDict();
+                    return builder.Build();
                 } else {
                     Array buses;
                     for (const auto &bus: stop->buses_on_stop) {
                         buses.emplace_back(bus);
                     }
-                    stop_response["request_id"] = stop_node.AsMap().at("id").AsInt();
-                    stop_response["buses"] = std::move(buses);
-                    return stop_response;
+                    builder.StartDict()
+                        .Key("request_id").Value(stop_node.AsMap().at("id"))
+                        .Key("buses").Value(std::move(buses))
+                        .EndDict();
+                    return builder.Build();
                 }
             }
 
-            Dict JSON_Reader::MakeBusResponse(const Node &bus_node, RequestHandler &handler) {
-                Dict bus_response;
+            Node JSON_Reader::MakeBusResponse(const Node &bus_node, RequestHandler &handler) {
+                Builder builder;
                 const auto &bus = handler.GetBusInfo(bus_node.AsMap().at("name").AsString());
                 if (!bus) {
-                    bus_response["request_id"] = bus_node.AsMap().at("id").AsInt();
-                    bus_response["error_message"] = std::string("not found");
-                    return bus_response;
+                    builder.StartDict()
+                        .Key("request_id").Value(bus_node.AsMap().at("id"))
+                        .Key("error_message").Value(std::string("not found"))
+                        .EndDict();
+                    return builder.Build();
                 } else {
                     double geo_length = 0.0;
                     int route_length = 0;
@@ -153,18 +160,19 @@ namespace catalogue {
                     for (size_t i = 0; i <= stops.size() - 2; i++) {
                         handler.CalcDistance(geo_length, route_length, stops[i], stops[i + 1]);
                     }
-                    bus_response["request_id"] = bus_node.AsMap().at("id").AsInt();
-                    bus_response["route_length"] = route_length;
-                    bus_response["curvature"] = (route_length * 1.0) / geo_length;
-                    bus_response["stop_count"] = int(stops.size());
-                    bus_response["unique_stop_count"] = int(handler.CountUniqueStops(bus));
-                    return bus_response;
+                    builder.StartDict()
+                        .Key("request_id").Value(bus_node.AsMap().at("id"))
+                        .Key("route_length").Value(route_length)
+                        .Key("curvature").Value((route_length * 1.0) / geo_length)
+                        .Key("stop_count").Value(int(stops.size()))
+                        .Key("unique_stop_count").Value(int(handler.CountUniqueStops(bus)))
+                        .EndDict();
+                    return builder.Build();
                 }
             }
 
-            Dict JSON_Reader::MakeMapResponse(const Node &map_node, RequestHandler &handler) {
-                Dict map_response;
-                map_response["request_id"] = map_node.AsMap().at("id").AsInt();
+            Node JSON_Reader::MakeMapResponse(const Node &map_node, RequestHandler &handler) {
+                Builder builder;
 
                 map_renderer::RenderSettings settings = GetRenderSettings();
                 map_renderer::MapRenderer renderer(settings);
@@ -172,8 +180,11 @@ namespace catalogue {
 
                 std::ostringstream str_map;
                 map.Render(str_map);
-                map_response["map"] = std::string(str_map.str());
-                return map_response;
+                builder.StartDict()
+                    .Key("request_id").Value(map_node.AsMap().at("id"))
+                    .Key("map").Value(str_map.str())
+                    .EndDict();
+                return builder.Build();
             }
         }
     }

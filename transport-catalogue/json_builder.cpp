@@ -6,7 +6,7 @@ KeyContext Builder::Key(std::string key){
     }
 
     if(stack_node_.back()->IsMap()){
-        stack_node_.emplace_back(std::move(std::make_unique<Node>(std::move(key))));//move?
+        stack_node_.emplace_back(std::move(std::make_unique<Node>(std::move(key))));
     }
     return KeyContext(*this);
 }
@@ -17,7 +17,7 @@ Builder& Builder::Value(Node node){
 }
 
 DictContext Builder::StartDict(){
-    stack_node_.emplace_back(std::move(std::make_unique<Node>(Dict())));//move??
+    stack_node_.emplace_back(std::move(std::make_unique<Node>(Dict())));
     return DictContext(*this);
 }
 
@@ -36,7 +36,7 @@ Builder& Builder::EndDict(){
 }
 
 ArrayContext Builder::StartArray(){
-    stack_node_.emplace_back(std::move(std::make_unique<Node>(Array())));//move??
+    stack_node_.emplace_back(std::move(std::make_unique<Node>(Array())));
     return ArrayContext(*this);
 }
 
