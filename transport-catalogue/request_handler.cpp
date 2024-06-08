@@ -43,3 +43,17 @@ std::vector<std::pair<const Bus*, std::vector<const Stop*>>> RequestHandler::Get
 
     return result;
 }
+
+std::optional<RouteInfo> RequestHandler::GetRouteInformation(std::string_view from, std:: string_view to, RouteSettings& settings){
+    std::optional<RouteInfo> result;
+    if(!router_){
+        router_ = std::make_unique<catalogue::routes::TransportRouter>(catalogue_, settings);
+    }
+
+    const auto start = router_->GetVertexPairByStop(GetStopInfo(from))->from;
+    const auto end = router_->GetVertexPairByStop(GetStopInfo(to))->from;
+
+    result = router_->GetRouteInfo(start, end);
+
+    return result;
+}

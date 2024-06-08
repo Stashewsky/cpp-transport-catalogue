@@ -18,6 +18,7 @@ namespace catalogue{
             const Bus *FindBus(std::string_view bus_name) const;
             int GetDistance(const Stop* from, const Stop* to) const;
             const std::unordered_map<std::string_view, Bus*>& Get_all_buses() const;
+            const std::unordered_map<std::string_view, Stop*>& GetAllStops() const;
         private:
             std::deque<Bus> bus_data_;
             std::deque<Stop> stops_data_;

@@ -74,5 +74,9 @@ namespace catalogue {
         const std::unordered_map<std::string_view, Bus*>& TransportCatalogue::Get_all_buses() const {
             return buses_;
         }
+
+        const std::unordered_map<std::string_view, Stop *>& TransportCatalogue::GetAllStops() const {
+            return stops_;
+        }
     }
 }

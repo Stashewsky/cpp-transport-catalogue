@@ -10,6 +10,7 @@ namespace catalogue {
                 base_requests_ = root_map.at("base_requests");
                 stat_requests_ = root_map.at("stat_requests");
                 render_settings_ = root_map.at("render_settings");
+                routing_settings_ = root_map.at("routing_settings");
             }
 
             void JSON_Reader::ExecuteBaseRequests(TransportCatalogue &catalogue) {
@@ -75,6 +76,8 @@ namespace catalogue {
                         result.emplace_back(MakeStopResponse(request, handler));
                     } else if (request_type == "Map") {
                         result.emplace_back(MakeMapResponse(request, handler));
+                    } else if(request_type == "Route") {
+                        result.emplace_back(MakeRouteResponse(request, handler));
                     }
                 }
                 return Document{result};
@@ -186,6 +189,64 @@ namespace catalogue {
                     .EndDict();
                 return builder.Build();
             }
+            Node JSON_Reader::MakeRouteResponse(const Node& route_node, RequestHandler& handler){
+                Builder builder;
+                RouteSettings settings;
+
+                settings.wait_time = routing_settings_.AsMap().at("bus_wait_time").AsDouble();
+                settings.velocity = routing_settings_.AsMap().at("bus_velocity").AsDouble();
+                struct EdgeInfoGetter {
+                    Node operator()(const StopEdge& edge_info) {
+                        using namespace std::literals;
+
+                        return Builder{}.StartDict()
+                                .Key("type").Value("Wait"s)
+                                .Key("stop_name").Value(std::string(edge_info.name))
+                                .Key("time").Value(edge_info.time)
+                                .EndDict()
+                                .Build();
+                    }
+
+                    Node operator()(const BusEdge& edge_info) {
+                        using namespace std::literals;
+
+                        return Builder{}.StartDict()
+                                .Key("type").Value("Bus"s)
+                                .Key("bus").Value(std::string(edge_info.bus_name))
+                                .Key("span_count").Value(static_cast<int>(edge_info.span_count))
+                                .Key("time").Value(edge_info.time)
+                                .EndDict()
+                                .Build();
+                    }
+                };
+
+                const auto& from = route_node.AsMap().at("from").AsString();
+                const auto& to = route_node.AsMap().at("to").AsString();
+                const auto& id = route_node.AsMap().at("id").AsInt();
+
+                const auto& route_info = handler.GetRouteInformation(from, to, settings);
+
+                if(!route_info){
+                    builder.StartDict()
+                    .Key("request_id").Value(id)
+                    .Key("error_message").Value(std::string ("not found"))
+                    .EndDict();
+                    return builder.Build();
+                }else{
+                    Array items;
+                    for(const auto& item : route_info->edges){
+                        items.emplace_back(std::visit(EdgeInfoGetter{}, item));
+                    }
+
+                    builder.StartDict()
+                    .Key("request_id").Value(id)
+                    .Key("total_time").Value(route_info->total_time)
+                    .Key("items").Value(items)
+                    .EndDict();
+                    return builder.Build();
+                }
+            }
+
         }
     }
 }
