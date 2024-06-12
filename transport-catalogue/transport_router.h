@@ -17,11 +17,7 @@ namespace catalogue {
         class TransportRouter {
         public:
             TransportRouter(const data::TransportCatalogue& catalogue, RouteSettings& settings);
-            void SetGraph();
-            std::optional<StopVertexPair> GetVertexPairByStop(const Stop* stop) const;
-            std::optional<RouteInfo> GetRouteInfo(VertexId start, graph::VertexId end) const;
-            std::variant<StopEdge, BusEdge> GetEdge(EdgeId id) const;
-
+            std::optional<RouteInfo> GetRouteInfo(std::string_view from, std::string_view to) const;
         private:
             const data::TransportCatalogue& catalogue_;
 
@@ -35,6 +31,9 @@ namespace catalogue {
             std::unordered_map<const Stop*, StopVertexPair> stop_vertex_map_;
             std::unordered_map<EdgeId, std::variant<StopEdge, BusEdge>> edges_data_;
 
+            void SetGraph();
+            std::optional<StopVertexPair> GetVertexPairByStop(const Stop* stop) const;
+            std::variant<StopEdge, BusEdge> GetEdge(EdgeId id) const;
             void SetStops();
             void AddEdgeToStop();
             void AddEdgeToBus();

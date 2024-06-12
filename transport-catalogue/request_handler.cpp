@@ -50,10 +50,7 @@ std::optional<RouteInfo> RequestHandler::GetRouteInformation(std::string_view fr
         router_ = std::make_unique<catalogue::routes::TransportRouter>(catalogue_, settings);
     }
 
-    const auto start = router_->GetVertexPairByStop(GetStopInfo(from))->from;
-    const auto end = router_->GetVertexPairByStop(GetStopInfo(to))->from;
-
-    result = router_->GetRouteInfo(start, end);
+    result = router_->GetRouteInfo(from, to);
 
     return result;
 }

@@ -25,7 +25,10 @@ namespace catalogue {
             }
         }
 
-        std::optional<RouteInfo> TransportRouter::GetRouteInfo(VertexId start, graph::VertexId end) const {
+        std::optional<RouteInfo> TransportRouter::GetRouteInfo(std::string_view from, std::string_view to) const {
+            const auto start = GetVertexPairByStop(stops_.at(from))->from;
+            const auto end = GetVertexPairByStop(stops_.at(to))->from;
+
             const auto &route_info = router_->BuildRoute(start, end);
             if (route_info) {
                 RouteInfo result;
